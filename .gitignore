@@ -1,0 +1,6 @@
+.history
+.nuxt
+.idea
+.vscode
+
+node_modules
