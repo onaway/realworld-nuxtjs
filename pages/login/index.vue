@@ -7,16 +7,17 @@
                     <p class="text-xs-center">
                         <nuxt-link to='/register' v-if="isLogin">Need an account?</nuxt-link>
                         <nuxt-link to='/login' v-else>Have an account?</nuxt-link>
-                        
                     </p>
 
                     <ul class="error-messages">
-                        <li>That email is already taken</li>
+                        <template v-for="(messages, field) in errors">
+                            <li v-for="message in messages">{{ field }} {{ message }}</li>
+                        </template>
                     </ul>
 
                     <form @submit.prevent="submit">
-                        <fieldset class="form-group">
-                            <input v-if="!isLogin" v-model="user.username" class="form-control form-control-lg" type="text" placeholder="Your Name" required>
+                        <fieldset class="form-group" v-if="!isLogin">
+                            <input v-model="user.username" class="form-control form-control-lg" type="text" placeholder="Your Name" required>
                         </fieldset>
                         <fieldset class="form-group">
                             <input v-model="user.email" class="form-control form-control-lg" type="email" placeholder="Email" required>
@@ -45,7 +46,8 @@ export default {
                 username: '',
                 email: '',
                 password: ''
-            }
+            },
+            errors: ''  // 错误信息
         };
     },
     computed: {
@@ -55,9 +57,15 @@ export default {
     },
     methods: {
         async submit() {
-            const { data } = this.isLogin ? await login({ user: this.user }) : await register({ user: this.user })
+            try {
+                const { data } = this.isLogin ? await login({ user: this.user }) : await register({ user: this.user })
+                
+                this.$router.push('/')
+            } catch (err) {
+                // console.dir(err);
+                this.errors = err.response.data.errors
+            }
             
-            this.$router.push('/')
         }
     }
 }
