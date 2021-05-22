@@ -37,6 +37,7 @@
 
 <script>
 import { login, register } from '@/api/user';
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
     name: 'Login',
@@ -60,6 +61,11 @@ export default {
             try {
                 const { data } = this.isLogin ? await login({ user: this.user }) : await register({ user: this.user })
                 
+                const user = {
+                    accessToken: 'someStringGotFromApiServiceWithAjax'
+                }
+                this.$store.commit('setUser', user)
+                Cookie.set('user', user)
                 this.$router.push('/')
             } catch (err) {
                 // console.dir(err);

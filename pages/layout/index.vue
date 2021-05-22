@@ -24,6 +24,12 @@
                     <li class="nav-item">
                         <nuxt-link class="nav-link" to='register'>Sign up</nuxt-link>
                     </li>
+                    <li class="nav-item">
+                        <nuxt-link class="nav-link" to="/@onaway">
+                            <img class="user-pic" src="http://hotupdate.enjoymi.com/videos/kof2/202105/577d0e5f37274b7c192ce0ffdc1beed0.jpg">
+                            onaway
+                        </nuxt-link>
+                    </li>
                 </ul>
             </div>
         </nav>
