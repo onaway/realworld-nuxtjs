@@ -9,7 +9,11 @@ export default ({ store }) => {
     // 请求拦截器
     request.interceptors.request.use(function (config) {
         // Do something before request is sent
-        config.headers.authorization = `Token ${store.state.user.token}`
+        const { user } = store.state
+        if (user && user.token) {
+            config.headers.authorization = `Token ${store.state.user.token}` 
+        }
+        
         return config;
     }, function (error) {
         // Do something with request error
