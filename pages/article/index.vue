@@ -72,33 +72,42 @@
 </template>
 
 <script>
-import { getArticleDetail } from '@/api/article';
-import articleMeta from './components/article-meta';
-import MarkdownIt from 'markdown-it';
+import { getArticleDetail } from "@/api/article";
+import ArticleMeta from "./components/article-meta";
+import MarkdownIt from "markdown-it";
 
 export default {
-    components: { articleMeta },
-    name: 'Article',
+    components: { ArticleMeta },
+    name: "Article",
     data() {
+        return {};
+    },
+    head() {
+        // 自定义此页面的“标题”和“描述”
         return {
-
+            title: `${this.article.title} - RealWorld`,
+            meta: [
+                {
+                    hid: "description",
+                    name: "description",
+                    content: this.article.description,
+                },
+            ],
         };
     },
     async asyncData({ params }) {
-        const { data } = await getArticleDetail(params.slug)
+        const { data } = await getArticleDetail(params.slug);
         console.log(data);
-        const { article } = data
-        const md = new MarkdownIt()
-        article.body = md.render(article.body)
+        const { article } = data;
+        const md = new MarkdownIt();
+        article.body = md.render(article.body);
 
         return {
-            article
-        }
+            article,
+        };
     },
-    methods: {
-
-    }
-}
+    methods: {},
+};
 </script>
 
 <style lang='less' scoped>
