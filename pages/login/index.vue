@@ -40,6 +40,7 @@ import { login, register } from '@/api/user';
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+    middleware: 'notAuthenticated',
     name: 'Login',
     data() {
         return {
@@ -60,15 +61,16 @@ export default {
         async submit() {
             try {
                 const { data } = this.isLogin ? await login({ user: this.user }) : await register({ user: this.user })
-                
-                const user = {
-                    accessToken: 'someStringGotFromApiServiceWithAjax'
-                }
+                const { user } = data
+
+                // 保存用户的登录状态
                 this.$store.commit('setUser', user)
+
+                // 数据存缓存，使数据持久化，防止页面数据丢失
                 Cookie.set('user', user)
+
                 this.$router.push('/')
             } catch (err) {
-                // console.dir(err);
                 this.errors = err.response.data.errors
             }
             

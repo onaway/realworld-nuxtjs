@@ -12,6 +12,8 @@ export const mutations = {
     }
 }
 export const actions = {
+    // 此方法只会在服务端渲染期间运行
+    // 初始化容器数据，传递数据给客户端使用
     nuxtServerInit({ commit }, { req }) {
         let user = null
         if (req.headers.cookie) {
