@@ -10,7 +10,7 @@
                     </li>
                     <template v-if="user">
                         <li class="nav-item">
-                            <nuxt-link class="nav-link" to='editor'>
+                            <nuxt-link class="nav-link" to='/editor'>
                                 <i class="ion-compose"></i>&nbsp;New Post
                             </nuxt-link>
                         </li>
@@ -20,7 +20,7 @@
                             </nuxt-link>
                         </li>
                         <li class="nav-item">
-                            <nuxt-link class="nav-link" :to="{ name: 'Profile', params: {username: '@' + user.username} }">
+                            <nuxt-link class="nav-link" :to="{ name: 'Profile', params: {username: user.username} }">
                                 <img class="user-pic" :src="user.image">
                                 {{ user.username }}
                             </nuxt-link>
@@ -28,10 +28,10 @@
                     </template>
                     <template v-else>
                         <li class="nav-item">
-                            <nuxt-link class="nav-link" to='login'>Sign in</nuxt-link>
+                            <nuxt-link class="nav-link" to='/login'>Sign in</nuxt-link>
                         </li>
                         <li class="nav-item">
-                            <nuxt-link class="nav-link" to='register'>Sign up</nuxt-link>
+                            <nuxt-link class="nav-link" to='/register'>Sign up</nuxt-link>
                         </li>
                     </template>
                 </ul>
