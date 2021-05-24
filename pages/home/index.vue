@@ -67,8 +67,12 @@ export default {
     components: {
         ArticlePreview
     },
-    data() {
-        return {};
+    watchQuery: ["page", "tag", "tab"], // 监听 page, tag, tab
+    computed: {
+        ...mapState(["user"]),
+        totalPage() {
+            return Math.ceil(this.articlesCount / this.limit);
+        },
     },
     async asyncData({ query, store }) {
         const page = parseInt(query.page) || 1;
@@ -79,10 +83,7 @@ export default {
             offset: (page - 1) * limit,
             tag,
         };
-        const loadArticles =
-            store.state.user && tab === "your_feed"
-                ? getFeedArticles
-                : getAllArticles;
+        const loadArticles = store.state.user && tab === "your_feed" ? getFeedArticles : getAllArticles;
         const [articleRes, tagRes] = await Promise.all([
             loadArticles(params),
             getTags(),
@@ -102,18 +103,8 @@ export default {
             limit,
             page,
             tag,
-            tab,
+            tab
         };
-    },
-    watchQuery: ["page", "tag", "tab"], // 监听 page, tag, tab
-    computed: {
-        ...mapState(["user"]),
-        totalPage() {
-            return Math.ceil(this.articlesCount / this.limit);
-        },
-    },
-    methods: {
-
     },
 };
 </script>
