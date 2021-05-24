@@ -26,10 +26,12 @@
                     <div class="articles-toggle">
                         <ul class="nav nav-pills outline-active">
                             <li class="nav-item">
-                                <a class="nav-link active" href="">My Articles</a>
+                                <nuxt-link :to="{name: 'Profile', query: { tab: 'my_articles' }}" class="nav-link" exact
+                                    :class="{active: tab === 'my_articles'}">My Articles</nuxt-link>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Favorited Articles</a>
+                                <nuxt-link :to="{name: 'Profile', query: { tab: 'favorited_articles' }}" class="nav-link" exact
+                                    :class="{active: tab === 'favorited_articles'}">Favorited Articles</nuxt-link>
                             </li>
                         </ul>
                     </div>
@@ -40,10 +42,10 @@
                     <!-- 分页 -->
                     <nav>
                         <ul class="pagination">
-                            <!-- <li class="page-item" :class="{active: item === page}" v-for="item in totalPage">
-                                <nuxt-link :to="{ name: 'Home', query: { page: item, tag: $route.query.tag, tab: tab } }" class="page-link">
-                                    {{ item }}</nuxt-link>
-                            </li> -->
+                            <li class="page-item" :class="{active: item === page}" v-for="item in totalPage">
+                                <nuxt-link :to="{ name: 'Profile', query: { page: item, tab: tab } }" class="page-link">{{ item }}
+                                </nuxt-link>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -53,69 +55,81 @@
 </template>
 
 <script>
-import { getProfile, followUser, unfollowUser } from '@/api/profile'
-import { getAllArticles } from '@/api/article'
-import { mapState } from 'vuex'
-import ArticlePreview from '@/pages/home/components/article-preview'
+import { getProfile, followUser, unfollowUser } from "@/api/profile";
+import { getAllArticles } from "@/api/article";
+import { mapState } from "vuex";
+import ArticlePreview from "@/pages/home/components/article-preview";
 
 export default {
-    middleware: 'authenticated',
-    name: 'Profile',
+    middleware: "authenticated",
+    name: "Profile",
     components: {
-        ArticlePreview
+        ArticlePreview,
     },
-    data() {
-        return {
-            profile: {},
-            articles: [],
-            articlesCount: '',
-            limit: 5,
-            disabled: false
-        };
-    },
+    watchQuery: ["page", "tab"], // 监听 page, tab
     computed: {
-        ...mapState(['user']),
+        ...mapState(["user"]),
         totalPage() {
             return Math.ceil(this.articlesCount / this.limit);
         },
         isYourself() {
-            if (this.user) return this.profile.username === this.user.username
-        }
+            if (this.user) return this.profile.username === this.user.username;
+        },
     },
-    mounted() {
-        const { username } = this.$route.params
-
-        username && getProfile(username).then(res => {
-            this.profile = res.data.profile
-        })
-
-        const page = parseInt(this.$route.query.page) || 1
-        const params = {
-            limit: this.limit,
-            offset: (page - 1) * this.limit,
-            author: username,
+    async asyncData({ params, query }) {
+        const { username } = params;
+        const { tab = "my_articles" } = query;
+        const page = parseInt(query.page) || 1;
+        const limit = 5;
+        
+        const form = {
+            limit,
+            offset: (page - 1) * limit,
+            author: username
         };
-        username && getAllArticles(params).then(res => {
-            this.articles = res.data.articles
-            this.articlesCount = res.data.articlesCount
-        })
+
+        if (tab === "my_articles") {
+            form.author = username
+            Reflect.deleteProperty(form, 'favorited')
+        } else {
+            form.favorited = username
+            Reflect.deleteProperty(form, 'author')
+        }
+        
+        const [profileRes, articleRes] = await Promise.all([
+            getProfile(username),
+            getAllArticles(form),
+        ]);
+
+        const { profile } = profileRes.data;
+        const { articles, articlesCount } = articleRes.data;
+        
+        return {
+            profile,
+            articles,
+            articlesCount,
+            limit,
+            page,
+            tab,
+            disabled: false
+        }
     },
     methods: {
         follow(profile) {
-            this.disabled = true
-            if(profile.following) {
+            this.disabled = true;
+            if (profile.following) {
                 // 取消关注
-                unfollowUser(profile.username)
-                profile.following = false
+                unfollowUser(profile.username);
+                profile.following = false;
             } else {
                 // 关注
-                followUser(profile.username)
-                profile.following = true
+                followUser(profile.username);
+                profile.following = true;
             }
-            this.disabled = false
-        }
-    }
-}
+            this.disabled = false;
+        },
+    },
+};
 </script>
 
 <style lang='less' scoped>
