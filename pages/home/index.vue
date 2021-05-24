@@ -29,36 +29,13 @@
                     </div>
 
                     <!-- 文章列表 -->
-                    <div class="article-preview" v-for="article in articles" :key="article.slug">
-                        <div class="article-meta">
-                            <nuxt-link :to="{ name: 'Profile', params: { username: article.author.username } }">
-                                <img :src="article.author.image" />
-                            </nuxt-link>
-                            <div class="info">
-                                <nuxt-link class="author"
-                                    :to="{ name: 'Profile', params: { username: article.author.username } }">
-                                    {{ article.author.username }}
-                                </nuxt-link>
-                                <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
-                            </div>
-                            <button @click="praise(article)" class="btn btn-outline-primary btn-sm pull-xs-right"
-                                :class="{ active: article.favorited }" :disabled="article.disabled">
-                                <i class="ion-heart"></i> {{ article.favoritesCount }}
-                            </button>
-                        </div>
-                        <nuxt-link :to="{ name: 'Article', params: { slug: article.slug } }" class="preview-link">
-                            <h1>{{ article.title }}</h1>
-                            <p>{{ article.description }}</p>
-                            <span>Read more...</span>
-                        </nuxt-link>
-                    </div>
+                    <article-preview :articles="articles"></article-preview>
 
                     <!-- 分页 -->
                     <nav>
                         <ul class="pagination">
                             <li class="page-item" :class="{active: item === page}" v-for="item in totalPage">
-                                <nuxt-link class="page-link"
-                                    :to="{ name: 'Home', query: { page: item, tag: $route.query.tag, tab: tab } }">
+                                <nuxt-link :to="{ name: 'Home', query: { page: item, tag: $route.query.tag, tab: tab } }" class="page-link">
                                     {{ item }}</nuxt-link>
                             </li>
                         </ul>
@@ -69,8 +46,8 @@
                     <div class="sidebar">
                         <p>Popular Tags</p>
                         <div class="tag-list">
-                            <nuxt-link :to="{name: 'Home', query: { tag: tag, tab: 'tab' }}" v-for="tag in tags"
-                                :key="tag" class="tag-pill tag-default">{{ tag }}</nuxt-link>
+                            <nuxt-link :to="{name: 'Home', query: { tag: tag, tab: 'tab' }}" v-for="tag in tags" :key="tag"
+                                class="tag-pill tag-default">{{ tag }}</nuxt-link>
                         </div>
                     </div>
                 </div>
@@ -80,17 +57,16 @@
 </template>
 
 <script>
-import {
-    getArticles,
-    getFeedArticles,
-    addFavorite,
-    delFavorite,
-} from "@/api/article";
+import { getAllArticles, getFeedArticles } from "@/api/article";
 import { getTags } from "@/api/tag";
 import { mapState } from "vuex";
+import ArticlePreview from './components/article-preview'
 
 export default {
     name: "Home",
+    components: {
+        ArticlePreview
+    },
     data() {
         return {};
     },
@@ -106,7 +82,7 @@ export default {
         const loadArticles =
             store.state.user && tab === "your_feed"
                 ? getFeedArticles
-                : getArticles;
+                : getAllArticles;
         const [articleRes, tagRes] = await Promise.all([
             loadArticles(params),
             getTags(),
@@ -137,21 +113,7 @@ export default {
         },
     },
     methods: {
-        praise(article) {
-            article.disabled = true
-            if (article.favorited) {
-                // 取消赞
-                delFavorite(article.slug);
-                article.favorited = false;
-                article.favoritesCount += -1;
-            } else {
-                // 点赞
-                addFavorite(article.slug);
-                article.favorited = true;
-                article.favoritesCount += 1;
-            }
-            article.disabled = false
-        },
+
     },
 };
 </script>
