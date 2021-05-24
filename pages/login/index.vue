@@ -17,13 +17,15 @@
 
                     <form @submit.prevent="submit">
                         <fieldset class="form-group" v-if="!isLogin">
-                            <input v-model="user.username" class="form-control form-control-lg" type="text" placeholder="Your Name" required>
+                            <input v-model="user.username" class="form-control form-control-lg" type="text" placeholder="Your Name"
+                                required>
                         </fieldset>
                         <fieldset class="form-group">
                             <input v-model="user.email" class="form-control form-control-lg" type="email" placeholder="Email" required>
                         </fieldset>
                         <fieldset class="form-group">
-                            <input v-model="user.password" class="form-control form-control-lg" type="password" placeholder="Password" required>
+                            <input v-model="user.password" class="form-control form-control-lg" type="password" placeholder="Password"
+                                required>
                         </fieldset>
                         <button class="btn btn-lg btn-primary pull-xs-right">
                             {{ isLogin ? 'Sign in' : 'Sign up' }}
@@ -73,7 +75,7 @@ export default {
             } catch (err) {
                 this.errors = err.response.data.errors
             }
-            
+
         }
     }
 }
