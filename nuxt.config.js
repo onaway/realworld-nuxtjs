@@ -51,5 +51,9 @@ export default {
     plugins: [
         '~/plugins/request.js',
         '~/plugins/dayjs.js'
-    ]
+    ],
+    server: {
+        host: '0.0.0.0',    // 监听所有的网卡地址
+        port: 3000
+    }
 }
